@@ -1,4 +1,4 @@
-﻿// -- MOCK INTERVIEW ---------------------------------
+// -- MOCK INTERVIEW ---------------------------------
 let mockQuestions = [];
 let mockCurrent = 0;
 let mockAnswers = [];
@@ -13,7 +13,7 @@ async function startMockInterview() {
   const type = document.getElementById('mockType').value;
   const mode = document.getElementById('mockAnswerMode').value;
   const btn = document.querySelector('#mock-setup .primary-btn');
-  btn.disabled = true; btn.querySelector('span:last-child').textContent = 'Generating questions…';
+  btn.disabled = true; btn.querySelector('span:last-child').textContent = 'Generating questions';
 
   const sys = `You are an expert interviewer for ${role} positions. Generate exactly ${count} interview questions.
 Type: ${type}. Return JSON array only: [{"q":"question text","type":"technical|behavioral","difficulty":"easy|medium|hard"}]`;
@@ -40,7 +40,7 @@ function showMockQuestion() {
   document.getElementById('mockProgressFill').style.width = `${((mockCurrent)/total)*100}%`;
   document.getElementById('mockQText').textContent = q.q;
   document.getElementById('mockTextAnswer').value = '';
-  document.getElementById('mockVoiceTranscript').textContent = 'Your answer will appear here…';
+  document.getElementById('mockVoiceTranscript').textContent = 'Your answer will appear here';
   mockVoiceText = '';
   document.getElementById('mockAnswerFeedback').innerHTML = '';
   const timerSecs = parseInt(document.getElementById('mockTimer').value);
@@ -85,7 +85,7 @@ function startMockVoice() {
     mockIsRecording = true;
     document.getElementById('mockMicRing').classList.add('active');
     document.getElementById('mockMicBtn').textContent = '?';
-    document.getElementById('mockVoiceStatus').textContent = ' Recording…';
+    document.getElementById('mockVoiceStatus').textContent = ' Recording';
   };
   mockVoiceRec.onresult = e => {
     let interim = '';
@@ -119,7 +119,7 @@ async function submitMockAnswer() {
   const role = document.getElementById('jobRole').value;
   const exp = document.getElementById('expLevel').value;
   const fb = document.getElementById('mockAnswerFeedback');
-  fb.innerHTML = thinking('Evaluating your answer…');
+  fb.innerHTML = thinking('Evaluating your answer');
   document.getElementById('mockSubmitBtn').disabled = true;
 
   const sys = `You are a strict but fair ${role} interviewer. Evaluate this answer concisely. Return JSON:
@@ -174,7 +174,7 @@ function showMockReport() {
     const c = a.score>=70?'var(--accent3)':a.score>=45?'var(--accent)':'var(--warn)';
     return `<div style="border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;margin-bottom:6px"><strong style="font-size:13px">Q${i+1}: ${a.q}</strong><span style="color:${c};font-family:Syne,sans-serif;font-weight:700">${a.score}</span></div>
-      <div style="font-size:12px;color:var(--muted)">${a.verdict}${a.tip?' — '+a.tip:''}</div></div>`;
+      <div style="font-size:12px;color:var(--muted)">${a.verdict}${a.tip?'  '+a.tip:''}</div></div>`;
   }).join('');
   addHistory(`Mock Interview (${mockAnswers.length}Q)`, document.getElementById('jobRole').value, 'eval');
   incrementCount('eval');
@@ -301,8 +301,8 @@ function renderBank() {
       <div class="bank-card-meta">
         <span class="bank-diff ${item.diff}">${item.diff}</span>
         <div class="bank-action-btns">
-          <button class="bank-mini-btn" onclick="bankPracticeText(${idx})">📝 Practice</button>
-          <button class="bank-mini-btn" onclick="bankEvaluate(${idx})">🧠 Evaluate</button>
+          <button class="bank-mini-btn" onclick="bankPracticeText(${idx})">\uD83D\uDCDD Practice</button>
+          <button class="bank-mini-btn" onclick="bankEvaluate(${idx})">\uD83E\uDDE0 Evaluate</button>
         </div>
       </div>
     </div>`).join('');
@@ -329,9 +329,9 @@ const FLASHCARDS = {
   english:[
     {front:'How to start your self-introduction',back:'Say: "Thank you for this opportunity. My name is [Name]. I am a [role] with [X] years of experience in [domain]. I am passionate about [area] and most recently I [achievement]."'},
     {front:'How to say you don\'t know something professionally',back:'"That\'s a great question. I don\'t have that information off the top of my head, but I would approach it by [method]. I\'d verify and get back to you with a precise answer."'},
-    {front:'STAR Method structure',back:'S — Situation: Set the context\nT — Task: What was your responsibility?\nA — Action: What did YOU specifically do?\nR — Result: What was the measurable outcome?'},
+    {front:'STAR Method structure',back:'S  Situation: Set the context\nT  Task: What was your responsibility?\nA  Action: What did YOU specifically do?\nR  Result: What was the measurable outcome?'},
     {front:'How to handle "What is your weakness?"',back:'Pick a real but non-critical weakness. Show self-awareness and what you are doing to improve. Example: "I used to struggle with public speaking, so I joined a Toastmasters club and now present weekly."'},
-    {front:'Professional way to say "I disagree"',back:'"I appreciate your perspective. I\'d like to offer a different viewpoint — [your point]. What are your thoughts on that approach?"'},
+    {front:'Professional way to say "I disagree"',back:'"I appreciate your perspective. I\'d like to offer a different viewpoint  [your point]. What are your thoughts on that approach?"'},
     {front:'Closing a job interview strongly',back:'"Thank you so much for your time. This role excites me because [reason]. I am very interested and confident I can contribute significantly. What are the next steps in the process?"'},
     {front:'How to describe a gap in employment',back:'"During that period, I [what you did: freelanced, upskilled, managed family]. It gave me [what you gained]. I am now fully ready and excited to contribute."'},
     {front:'Answering "Why should we hire you?"',back:'Structure: 1) Your unique skills matching the JD, 2) Relevant achievement with numbers, 3) Cultural fit + enthusiasm. Never say "I need a job."'},
@@ -342,28 +342,28 @@ const FLASHCARDS = {
     {front:'What does "volatile" keyword do?',back:'Ensures visibility of variable changes across threads. Every write is flushed to main memory; every read comes from main memory. Does NOT guarantee atomicity.'},
     {front:'Difference: ArrayList vs LinkedList',back:'ArrayList: O(1) random access, O(n) insert/delete in middle. LinkedList: O(n) access, O(1) insert/delete at known node. Use ArrayList for most cases.'},
     {front:'What is a functional interface?',back:'An interface with exactly ONE abstract method. Used with lambdas. Examples: Runnable, Callable, Comparator, Predicate, Function, Consumer, Supplier.'},
-    {front:'Explain try-with-resources',back:'Auto-closes resources (implements AutoCloseable) after try block. Syntax: try(Resource r = new Resource()){ ... } — no need for finally block to close.'},
+    {front:'Explain try-with-resources',back:'Auto-closes resources (implements AutoCloseable) after try block. Syntax: try(Resource r = new Resource()){ ... }  no need for finally block to close.'},
     {front:'What is Optional in Java 8?',back:'A container object that may or may not contain a non-null value. Avoids NullPointerException. Key methods: isPresent(), get(), orElse(), orElseGet(), map(), filter().'},
-    {front:'What is the difference between Checked and Unchecked exceptions?',back:'Checked: must be handled (IOException, SQLException). Unchecked (RuntimeException): NullPointerException, ArrayIndexOutOfBoundsException — compiler doesn\'t force handling.'},
+    {front:'What is the difference between Checked and Unchecked exceptions?',back:'Checked: must be handled (IOException, SQLException). Unchecked (RuntimeException): NullPointerException, ArrayIndexOutOfBoundsException  compiler doesn\'t force handling.'},
   ],
   python:[
     {front:'What is a Python decorator?',back:'A function that takes another function and extends its behaviour. Syntax: @decorator_name above function definition. Used for logging, auth, caching, timing.'},
     {front:'Difference between list and tuple',back:'List: mutable, [ ], slower. Tuple: immutable, ( ), faster, hashable (can be dict key). Use tuple when data shouldn\'t change.'},
     {front:'What is __init__ vs __new__?',back:'__new__ creates the instance (called first). __init__ initialises it (called after). Usually only override __init__. Override __new__ for singletons or immutable types.'},
     {front:'Explain list comprehension',back:'[expression for item in iterable if condition]\nExample: [x**2 for x in range(10) if x%2==0] ? squares of even numbers. Faster than equivalent for loop.'},
-    {front:'What is a generator?',back:'A function using yield instead of return. Returns a lazy iterator — values computed on demand, saving memory. Best for large datasets.'},
+    {front:'What is a generator?',back:'A function using yield instead of return. Returns a lazy iterator  values computed on demand, saving memory. Best for large datasets.'},
     {front:'Explain *args and **kwargs',back:'*args: accepts any number of positional arguments as a tuple.\n**kwargs: accepts any number of keyword arguments as a dict.\nOrder: def fn(a, *args, **kwargs)'},
-    {front:'What is GIL?',back:'Global Interpreter Lock — a mutex that allows only one thread to execute Python bytecode at a time. Limits CPU-bound multithreading. Use multiprocessing for CPU tasks.'},
+    {front:'What is GIL?',back:'Global Interpreter Lock  a mutex that allows only one thread to execute Python bytecode at a time. Limits CPU-bound multithreading. Use multiprocessing for CPU tasks.'},
     {front:'Difference between deep copy and shallow copy',back:'Shallow copy: copies object but references nested objects (copy.copy()). Deep copy: copies everything recursively including nested objects (copy.deepcopy()).'},
   ],
   system:[
     {front:'What is the CAP Theorem?',back:'Distributed system can guarantee only 2 of 3: Consistency (all nodes same data), Availability (always responds), Partition Tolerance (works despite network splits). CP or AP systems.'},
-    {front:'SQL vs NoSQL — when to use each?',back:'SQL: structured data, ACID transactions, complex queries (banking, ERP). NoSQL: flexible schema, massive scale, fast reads (social media, IoT, real-time analytics).'},
+    {front:'SQL vs NoSQL  when to use each?',back:'SQL: structured data, ACID transactions, complex queries (banking, ERP). NoSQL: flexible schema, massive scale, fast reads (social media, IoT, real-time analytics).'},
     {front:'What is consistent hashing?',back:'Maps both servers and keys onto a ring. Key goes to the next server clockwise. Adding/removing a server only remaps a fraction of keys. Used in distributed caches (Redis Cluster, Cassandra).'},
     {front:'Explain Load Balancing algorithms',back:'Round Robin: sequential. Weighted Round Robin: based on server capacity. Least Connections: fewest active. IP Hash: same client ? same server. Random: random selection.'},
     {front:'What is a message queue? When to use it?',back:'Decouples producers from consumers. Use when: async processing, rate limiting, peak load buffering. Examples: RabbitMQ, Kafka, SQS. Kafka best for high-throughput event streaming.'},
-    {front:'Database indexing — how does it work?',back:'Creates a data structure (B-tree usually) for fast lookup. Trade-off: speeds up reads, slows writes, uses storage. Index columns used in WHERE, JOIN, ORDER BY.'},
-    {front:'What is eventual consistency?',back:'System guarantees all nodes will eventually converge to the same value — but not immediately. Used by DNS, Cassandra, DynamoDB. Higher availability but may serve stale data briefly.'},
+    {front:'Database indexing  how does it work?',back:'Creates a data structure (B-tree usually) for fast lookup. Trade-off: speeds up reads, slows writes, uses storage. Index columns used in WHERE, JOIN, ORDER BY.'},
+    {front:'What is eventual consistency?',back:'System guarantees all nodes will eventually converge to the same value  but not immediately. Used by DNS, Cassandra, DynamoDB. Higher availability but may serve stale data briefly.'},
     {front:'Horizontal vs Vertical Scaling',back:'Vertical (scale up): bigger server, more RAM/CPU. Simple but limited. Horizontal (scale out): more servers, needs load balancer. Preferred for modern distributed systems.'},
   ],
   behavioral:[
@@ -381,7 +381,7 @@ const FLASHCARDS = {
     {front:'What is a Dockerfile?',back:'Text file with instructions to build a Docker image. Key commands: FROM (base image), RUN (execute), COPY (add files), EXPOSE (port), CMD/ENTRYPOINT (start command).'},
     {front:'Blue-Green vs Canary Deployment',back:'Blue-Green: two identical environments, switch traffic instantly, easy rollback. Canary: gradually shift % of traffic to new version, monitor, expand or rollback. Canary safer for large scale.'},
     {front:'What is Terraform?',back:'Infrastructure as Code tool by HashiCorp. Define cloud resources in HCL files. Commands: init, plan (preview), apply (create), destroy. Maintains state file to track real resources.'},
-    {front:'What is a Kubernetes Pod?',back:'Smallest deployable unit in K8s. Contains one or more containers sharing network and storage. Containers in a pod communicate via localhost. Ephemeral — managed by Deployments.'},
+    {front:'What is a Kubernetes Pod?',back:'Smallest deployable unit in K8s. Contains one or more containers sharing network and storage. Containers in a pod communicate via localhost. Ephemeral  managed by Deployments.'},
     {front:'What is Helm?',back:'Package manager for Kubernetes. A "chart" is a collection of YAML templates. Helm fills in values and deploys. Simplifies complex K8s app deployments and upgrades.'},
   ],
 };
@@ -416,7 +416,7 @@ function showFlashcard() {
     <div class="flash-front-text">${card.front}</div>
     <div class="flash-tap-hint"> Click to reveal answer</div>`;
   document.getElementById('flashBack').innerHTML = `
-    <div class="flash-back-label">✅ Answer</div>
+    <div class="flash-back-label"> Answer</div>
     <div class="flash-back-text">${card.back.replace(/\n/g,'<br>')}</div>`;
 }
 
@@ -461,7 +461,7 @@ function showDailyChallenge() {
   const today = new Date().toDateString();
   const seed = today.split('').reduce((a,c) => a+c.charCodeAt(0), 0);
   const q = allQ[seed % allQ.length];
-  if (q) { document.getElementById('textQuestion').value = q.q; switchTab('text'); showToast('🌟 Daily Challenge loaded!'); }
+  if (q) { document.getElementById('textQuestion').value = q.q; switchTab('text'); showToast(' Daily Challenge loaded!'); }
 }
 
 // -- INIT FEATURES ON LOAD --------------------------
@@ -471,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (actions) {
     const dcBtn = document.createElement('button');
     dcBtn.className = 'icon-btn';
-    dcBtn.textContent = '🌟 Daily';
+    dcBtn.textContent = ' Daily';
     dcBtn.title = 'Load today\'s daily challenge question';
     dcBtn.onclick = showDailyChallenge;
     actions.insertBefore(dcBtn, actions.firstChild);

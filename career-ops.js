@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CrackInterviewAI - Career Ops Module
  * Implementation of Career-Ops features (Evaluator, Tracker, Stories, Outreach, Salary)
  */
@@ -26,7 +26,7 @@ async function evaluateJob() {
     if (!role) return showToast('Please specify target role', 'err');
 
     btn.disabled = true;
-    btn.innerHTML = '<span>â³ Evaluating...</span>';
+    btn.innerHTML = '<span> Evaluating...</span>';
     resultDiv.innerHTML = '<div class="card loading-placeholder">AI is analyzing the JD, assessing legitimacy, and calculating match score...</div>';
 
     const prompt = `You are a career expert. Evaluate this job description against my profile.
@@ -70,7 +70,7 @@ async function evaluateJob() {
         resultDiv.innerHTML = `<div class="card err-box">Error: ${e.message}</div>`;
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<span class="btn-icon">ðŸ”</span><span>Run Full Evaluation</span>';
+        btn.innerHTML = '<span class="btn-icon"></span><span>Run Full Evaluation</span>';
     }
 }
 
@@ -212,7 +212,7 @@ function updateStoryList() {
                 ${s.ref ? `<div class="star-label">Ref:</div><div style="font-style:italic; color:var(--accent3)">${s.ref}</div>` : ''}
             </div>
             <div style="margin-top:10px; display:flex; gap:10px">
-                <button class="icon-btn" style="font-size:10px" onclick="deleteStory(${s.id})">ðŸ—‘ Delete</button>
+                <button class="icon-btn" style="font-size:10px" onclick="deleteStory(${s.id})"> Delete</button>
             </div>
         </div>
     `).join('');
@@ -288,7 +288,7 @@ async function generateOutreach() {
                 ${response.replace(/\n/g, '<br>')}
                 <div class="char-count">Target: < 300 chars</div>
             </div>
-            <button class="icon-btn" style="margin-top:10px" onclick="copyDivContent('outResult')">ðŸ“‹ Copy Message</button>
+            <button class="icon-btn" style="margin-top:10px" onclick="copyDivContent('outResult')">\uD83D\uDCDD Copy Message</button>
         `;
     } catch (e) {
         resultDiv.innerHTML = `<div class="card err-box">Error: ${e.message}</div>`;
@@ -342,7 +342,7 @@ function addTrackerEntry() {
     const company = prompt('Enter Company Name:');
     const role = prompt('Enter Role Title:');
     if (company && role) {
-        saveToTracker({ company, role, score: 'â€”', status: 'Applied' });
+        saveToTracker({ company, role, score: '', status: 'Applied' });
     }
 }
 
