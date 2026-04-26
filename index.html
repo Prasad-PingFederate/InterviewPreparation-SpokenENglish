@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="SpeakPro — World's #1 AI-powered spoken English & interview preparation platform. Practice in text, voice, and video modes with brutal AI feedback."/>
+<title>SpeakPro AI — World-Class Interview & English Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<div class="orb1"></div><div class="orb2"></div><div class="orb3"></div>
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🎙</div>
+    <div>
+      <div class="logo-text">SpeakPro</div>
+      <div class="logo-sub">AI · INTERVIEW · MASTERY</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="nav-item active" onclick="switchTab('text')" id="nav-text">
+      <span class="nav-icon">📝</span><span>Text Practice</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('voice')" id="nav-voice">
+      <span class="nav-icon">🎙</span><span>Voice Mode</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('video')" id="nav-video">
+      <span class="nav-icon">📹</span><span>Video Mode</span>
+      <span class="badge-premium">PRO</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('evaluate')" id="nav-evaluate">
+      <span class="nav-icon">🧠</span><span>Evaluate Me</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('resume')" id="nav-resume">
+      <span class="nav-icon">📄</span><span>Resume Builder</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('mock')" id="nav-mock">
+      <span class="nav-icon">🎯</span><span>Mock Interview</span>
+      <span class="badge-premium">NEW</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('bank')" id="nav-bank">
+      <span class="nav-icon">📚</span><span>Question Bank</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('flash')" id="nav-flash">
+      <span class="nav-icon">🃏</span><span>Flashcards</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('dashboard')" id="nav-dashboard">
+      <span class="nav-icon">📊</span><span>Dashboard</span>
+    </button>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="api-section">
+      <label class="api-label">🔑 Anthropic API Key</label>
+      <input type="password" id="apiKey" class="api-input" placeholder="sk-ant-api03-..." oninput="checkKey()"/>
+      <span class="api-status err" id="apiStatus">● Not connected</span>
+    </div>
+    <div class="config-mini">
+      <select id="jobRole" onchange="updateQuickQuestions()" class="mini-select">
+        <option value="Java Developer">☕ Java Developer</option>
+        <option value="Python Developer">🐍 Python Developer</option>
+        <option value="React / Frontend">⚛️ React / Frontend</option>
+        <option value="Data Scientist">📊 Data Scientist</option>
+        <option value="DevOps Engineer">⚙️ DevOps Engineer</option>
+        <option value="SQL / Database">🗄️ SQL / Database</option>
+        <option value="System Design">🏗️ System Design</option>
+        <option value="Behavioral / HR">🤝 Behavioral / HR</option>
+        <option value="Spoken English">🌐 Spoken English</option>
+        <option value="Product Manager">🚀 Product Manager</option>
+      </select>
+      <select id="expLevel" class="mini-select">
+        <option value="Fresher (0-1 yr)">🌱 Fresher</option>
+        <option value="Junior (1-3 yr)">🔷 Junior</option>
+        <option value="Mid-level (3-6 yr)" selected>🔹 Mid-level</option>
+        <option value="Senior (6+ yr)">⭐ Senior</option>
+      </select>
+    </div>
+  </div>
+</aside>
+
+<!-- ══ MAIN CONTENT ══ -->
+<main class="main-content">
+  <header class="top-bar">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</button>
+    <div class="top-bar-title" id="topBarTitle">📝 Text Practice</div>
+    <div class="top-bar-actions">
+      <span class="session-stat" id="sessionStat">0 sessions</span>
+      <select id="answerStyle" class="mini-select top-select">
+        <option value="concise">⚡ Concise</option>
+        <option value="detailed" selected>📝 Detailed</option>
+        <option value="with code examples">💻 With Code</option>
+        <option value="STAR format">⭐ STAR (HR)</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- ══ TEXT PANEL ══ -->
+  <section class="panel active" id="panel-text">
+    <div class="panel-header">
+      <h1 class="panel-title">Ask Anything — Get <span class="gradient-text">Expert Answers</span></h1>
+      <p class="panel-sub">AI generates detailed interview answers tailored to your role &amp; level</p>
+    </div>
+    <div class="card">
+      <label class="field-label">💬 Your Interview Question</label>
+      <textarea id="textQuestion" class="text-input" placeholder="e.g. Explain the difference between HashMap and ConcurrentHashMap in Java..." rows="4"></textarea>
+      <div class="quick-questions" id="quickQuestions"></div>
+    </div>
+    <button class="primary-btn" id="textSendBtn" onclick="askTextQuestion()">
+      <span class="btn-icon">🚀</span><span>Get Expert Answer</span>
+    </button>
+    <div class="response-card" id="textResponse" style="display:none">
+      <div class="res-header">
+        <h3 class="res-title">🤖 AI Expert Answer</h3>
+        <div class="res-actions">
+          <button class="icon-btn" onclick="copyResponse()">📋 Copy</button>
+          <button class="icon-btn" onclick="speakText('textContent')">🔊 Read</button>
+        </div>
+      </div>
+      <div class="res-body" id="textContent"></div>
+    </div>
+  </section>
+
+  <!-- ══ VOICE PANEL ══ -->
+  <section class="panel" id="panel-voice">
+    <div class="panel-header">
+      <h1 class="panel-title">Voice Mode — <span class="gradient-text">Speak &amp; Learn</span></h1>
+      <p class="panel-sub">Speak your question or your answer. AI corrects your English &amp; gives brutally honest feedback.</p>
+    </div>
+    <div class="voice-mode-toggle">
+      <button class="vtog-btn active" id="vtog-ask" onclick="setVoiceMode('ask')">🎤 Ask a Question</button>
+      <button class="vtog-btn" id="vtog-answer" onclick="setVoiceMode('answer')">🧠 Practice My Answer</button>
+    </div>
+    <div id="voiceAnswerSetup" style="display:none;margin-bottom:16px;">
+      <div class="card" style="padding:16px;">
+        <label class="field-label">📌 Question You Are Answering</label>
+        <textarea id="voicePracticeQ" class="text-input" rows="2" placeholder="e.g. Tell me about yourself..."></textarea>
+      </div>
+    </div>
+    <div class="voice-center">
+      <div class="mic-ring" id="micRing" onclick="toggleRecording()">
+        <div class="mic-ring-outer"></div>
+        <div class="mic-ring-mid"></div>
+        <button class="mic-btn" id="micBtn">🎤</button>
+      </div>
+      <div class="voice-status" id="voiceStatus">Click the mic to start speaking</div>
+      <div class="waveform" id="waveform">
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+      </div>
+      <div class="transcript-box card" id="voiceTranscript">Your words will appear here in real time…</div>
+    </div>
+    <div id="voiceFeedbackArea"></div>
+  </section>
+
+  <!-- ══ VIDEO PANEL ══ -->
+  <section class="panel" id="panel-video">
+    <div class="panel-header">
+      <h1 class="panel-title">Video Mode — <span class="gradient-text premium-text">Premium AI Coach</span></h1>
+      <p class="panel-sub">Record yourself answering. AI analyses speech clarity, confidence, grammar, filler words &amp; content.</p>
+    </div>
+    <div class="card" style="padding:16px;margin-bottom:16px;">
+      <label class="field-label">📌 Question You Are Answering</label>
+      <textarea id="videoQuestion" class="text-input" rows="2" placeholder="e.g. Tell me about yourself. Where do you see yourself in 5 years?"></textarea>
+    </div>
+    <div class="video-grid">
+      <div class="video-box-wrap">
+        <div class="video-label">📹 Live Camera</div>
+        <div class="video-frame">
+          <video id="liveVideo" autoplay muted playsinline></video>
+          <div class="rec-indicator" id="recIndicator"><span class="rec-dot"></span> REC</div>
+        </div>
+        <div class="video-controls">
+          <button class="vid-btn vid-rec" id="recBtn" onclick="toggleRecord()">▶ Start Recording</button>
+          <button class="vid-btn" id="playbackBtn" onclick="playRecording()" disabled>▶ Playback</button>
+          <button class="vid-btn vid-analyse" id="analyseBtn" onclick="analyseVideo()" disabled>🔍 Analyse</button>
+        </div>
+      </div>
+      <div class="video-box-wrap">
+        <div class="video-label">🎬 Your Recording</div>
+        <div class="video-frame">
+          <video id="playbackVideo" controls playsinline></video>
+        </div>
+        <div class="live-transcript-mini card" id="liveTranscriptMini">Live transcript appears here as you speak…</div>
+      </div>
+    </div>
+    <div class="feedback-card" id="feedbackBox" style="display:none">
+      <div class="res-header">
+        <h3 class="res-title">📊 AI Performance Analysis</h3>
+        <button class="icon-btn" onclick="copyFeedback()">📋 Copy</button>
+      </div>
+      <div class="score-grid" id="scoreRow"></div>
+      <div class="res-body" id="feedbackContent"></div>
+    </div>
+  </section>
+
+  <!-- ══ EVALUATE ME PANEL ══ -->
+  <section class="panel" id="panel-evaluate">
+    <div class="panel-header">
+      <h1 class="panel-title">Evaluate Me — <span class="gradient-text">Brutal AI Mentor</span></h1>
+      <p class="panel-sub">You write your answer → AI grades it, corrects mistakes ruthlessly, then encourages you. Like a real coach.</p>
+    </div>
+    <div class="card" style="padding:20px;margin-bottom:14px;">
+      <label class="field-label">📌 The Question</label>
+      <textarea id="evalQuestion" class="text-input" rows="2" placeholder="e.g. Explain microservices vs monolith architecture..."></textarea>
+    </div>
+    <div class="card" style="padding:20px;margin-bottom:14px;">
+      <label class="field-label">✍️ Your Answer (write as you would say it in an interview)</label>
+      <textarea id="evalAnswer" class="text-input" rows="7" placeholder="Write your full answer here. Don't hold back — the AI will correct everything..."></textarea>
+    </div>
+    <div class="card" style="padding:16px;margin-bottom:14px;">
+      <label class="field-label" style="margin-bottom:10px;">🎯 Focus Area</label>
+      <div class="focus-btns">
+        <button class="focus-btn active" id="focus-all" onclick="setFocus('all')">All Round</button>
+        <button class="focus-btn" id="focus-grammar" onclick="setFocus('grammar')">Grammar</button>
+        <button class="focus-btn" id="focus-content" onclick="setFocus('content')">Content</button>
+        <button class="focus-btn" id="focus-fluency" onclick="setFocus('fluency')">Fluency</button>
+        <button class="focus-btn" id="focus-structure" onclick="setFocus('structure')">Structure</button>
+      </div>
+    </div>
+    <button class="primary-btn" id="evalBtn" onclick="evaluateAnswer()">
+      <span class="btn-icon">⚡</span><span>Evaluate My Answer</span>
+    </button>
+    <div class="eval-result" id="evalResult" style="display:none"></div>
+  </section>
+
+  <!-- ══ RESUME BUILDER PANEL ══ -->
+  <section class="panel" id="panel-resume">
+    <div class="panel-header">
+      <h1 class="panel-title">Resume Builder — <span class="gradient-text">AI-Crafted</span></h1>
+      <p class="panel-sub">Enter your details. AI writes a professional, ATS-friendly resume tailored to your target role.</p>
+    </div>
+    <div class="resume-grid">
+      <div class="resume-form-col">
+        <div class="card" style="padding:20px;margin-bottom:14px;">
+          <h3 class="card-section-title">👤 Personal Info</h3>
+          <div class="form-grid2">
+            <div class="form-group"><label class="field-label">Full Name</label><input type="text" id="rName" class="text-input-sm" placeholder="John Smith"/></div>
+            <div class="form-group"><label class="field-label">Target Role</label><input type="text" id="rRole" class="text-input-sm" placeholder="Senior Java Developer"/></div>
+            <div class="form-group"><label class="field-label">Email</label><input type="email" id="rEmail" class="text-input-sm" placeholder="john@email.com"/></div>
+            <div class="form-group"><label class="field-label">Phone</label><input type="text" id="rPhone" class="text-input-sm" placeholder="+91 98765 43210"/></div>
+            <div class="form-group full-w"><label class="field-label">LinkedIn / Portfolio</label><input type="text" id="rLinkedin" class="text-input-sm" placeholder="linkedin.com/in/johnsmith"/></div>
+            <div class="form-group full-w"><label class="field-label">Location</label><input type="text" id="rLocation" class="text-input-sm" placeholder="Hyderabad, India"/></div>
+          </div>
+        </div>
+        <div class="card" style="padding:20px;margin-bottom:14px;">
+          <h3 class="card-section-title">💼 Experience Summary</h3>
+          <textarea id="rExperience" class="text-input" rows="4" placeholder="E.g. 5 years as Java backend developer at TCS. Built microservices for banking. Led a team of 4. Used Spring Boot, Docker, AWS..."></textarea>
+        </div>
+        <div class="card" style="padding:20px;margin-bottom:14px;">
+          <h3 class="card-section-title">🛠️ Skills</h3>
+          <textarea id="rSkills" class="text-input" rows="3" placeholder="Java, Spring Boot, Microservices, Docker, Kubernetes, AWS, SQL, REST APIs, Git, Agile..."></textarea>
+        </div>
+        <div class="card" style="padding:20px;margin-bottom:14px;">
+          <h3 class="card-section-title">🎓 Education</h3>
+          <textarea id="rEducation" class="text-input" rows="3" placeholder="B.Tech Computer Science, JNTU Hyderabad, 2018. 7.8 CGPA."></textarea>
+        </div>
+        <div class="card" style="padding:20px;margin-bottom:14px;">
+          <h3 class="card-section-title">🏆 Achievements / Projects</h3>
+          <textarea id="rAchievements" class="text-input" rows="3" placeholder="Reduced API response time by 40%. Built payment gateway handling 10K TPS. GitHub: github.com/john..."></textarea>
+        </div>
+        <button class="primary-btn" id="resumeGenBtn" onclick="generateResume()"><span class="btn-icon">✨</span><span>Generate My Resume</span></button>
+      </div>
+      <div class="resume-preview-col">
+        <div class="resume-preview-header">
+          <span>📄 Resume Preview</span>
+          <button class="icon-btn" onclick="downloadResume()" id="downloadResumeBtn" style="display:none">⬇ Download</button>
+        </div>
+        <div class="resume-preview" id="resumePreview">
+          <div class="preview-placeholder">
+            <div style="font-size:48px;margin-bottom:16px;">📄</div>
+            <div style="color:var(--muted);font-size:14px;">Your AI-generated resume will appear here</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ DASHBOARD PANEL ══ -->
+  <section class="panel" id="panel-dashboard">
+    <div class="panel-header">
+      <h1 class="panel-title">Your <span class="gradient-text">Progress Dashboard</span></h1>
+      <p class="panel-sub">Track your interview preparation journey</p>
+    </div>
+    <div class="dashboard-stats">
+      <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total Sessions</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-text">0</div><div class="stat-label">Text Queries</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-voice">0</div><div class="stat-label">Voice Sessions</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-eval">0</div><div class="stat-label">Evaluations</div></div>
+    </div>
+    <div class="history-section">
+      <div class="section-title">📋 Session History <span id="historyCount" class="count-badge">0</span></div>
+      <div class="history-list" id="historyList">
+        <div class="empty-state">No sessions yet. Start practising! 🚀</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ MOCK INTERVIEW PANEL ══ -->
+  <section class="panel" id="panel-mock">
+    <div class="panel-header">
+      <h1 class="panel-title">Mock Interview — <span class="gradient-text">Full Simulation</span></h1>
+      <p class="panel-sub">Realistic interview simulation. AI asks questions, you answer, AI evaluates each response &amp; gives a final report card.</p>
+    </div>
+    <div id="mock-setup">
+      <div class="mock-config-grid">
+        <div class="card" style="padding:20px">
+          <h3 class="card-section-title">⚙️ Interview Setup</h3>
+          <div class="form-grid2" style="gap:12px">
+            <div class="form-group">
+              <label class="field-label">Number of Questions</label>
+              <select id="mockQCount" class="mini-select" style="width:100%">
+                <option value="3">3 Questions (Quick)</option>
+                <option value="5" selected>5 Questions (Standard)</option>
+                <option value="8">8 Questions (Full)</option>
+                <option value="10">10 Questions (Intense)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="field-label">Interview Type</label>
+              <select id="mockType" class="mini-select" style="width:100%">
+                <option value="technical">💻 Technical</option>
+                <option value="behavioral">🤝 Behavioral (HR)</option>
+                <option value="mixed" selected>🔀 Mixed</option>
+                <option value="case">📊 Case Study</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="field-label">Answer Mode</label>
+              <select id="mockAnswerMode" class="mini-select" style="width:100%">
+                <option value="text" selected>📝 Type My Answer</option>
+                <option value="voice">🎙 Speak My Answer</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="field-label">Time Per Answer</label>
+              <select id="mockTimer" class="mini-select" style="width:100%">
+                <option value="0">No Limit</option>
+                <option value="60">⏱ 1 Minute</option>
+                <option value="120" selected>⏱ 2 Minutes</option>
+                <option value="180">⏱ 3 Minutes</option>
+              </select>
+            </div>
+          </div>
+          <button class="primary-btn" style="margin-top:16px" onclick="startMockInterview()">
+            <span class="btn-icon">🎯</span><span>Start Mock Interview</span>
+          </button>
+        </div>
+        <div class="card" style="padding:20px">
+          <h3 class="card-section-title">📋 How It Works</h3>
+          <div class="how-steps">
+            <div class="how-step"><span class="how-num">1</span><span>AI generates role-specific questions</span></div>
+            <div class="how-step"><span class="how-num">2</span><span>You answer each question (text or voice)</span></div>
+            <div class="how-step"><span class="how-num">3</span><span>AI scores &amp; corrects each answer instantly</span></div>
+            <div class="how-step"><span class="how-num">4</span><span>Get a full performance report card at the end</span></div>
+          </div>
+          <div class="tip-banner">💡 Tip: Treat it like a real interview. Don't look up answers!</div>
+        </div>
+      </div>
+    </div>
+    <div id="mock-session" style="display:none">
+      <div class="mock-progress-bar">
+        <div class="mock-progress-fill" id="mockProgressFill"></div>
+      </div>
+      <div class="mock-q-counter" id="mockQCounter">Question 1 of 5</div>
+      <div class="card mock-question-card" id="mockQuestionCard">
+        <div class="mock-q-label">🎙 Interviewer asks:</div>
+        <div class="mock-q-text" id="mockQText"></div>
+        <div class="mock-timer-display" id="mockTimerDisplay" style="display:none">
+          <span id="mockTimerVal">2:00</span> remaining
+        </div>
+      </div>
+      <div id="mockAnswerArea">
+        <div id="mockTextAnswerWrap">
+          <label class="field-label">Your Answer:</label>
+          <textarea id="mockTextAnswer" class="text-input" rows="5" placeholder="Type your answer here..."></textarea>
+        </div>
+        <div id="mockVoiceAnswerWrap" style="display:none">
+          <div class="voice-center" style="padding:20px 0">
+            <div class="mic-ring" id="mockMicRing" onclick="toggleMockVoice()">
+              <div class="mic-ring-outer"></div><div class="mic-ring-mid"></div>
+              <button class="mic-btn" id="mockMicBtn">🎤</button>
+            </div>
+            <div class="voice-status" id="mockVoiceStatus">Click mic to answer</div>
+            <div class="transcript-box card" id="mockVoiceTranscript" style="max-width:600px">Your answer will appear here…</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:16px">
+        <button class="primary-btn" id="mockSubmitBtn" onclick="submitMockAnswer()" style="flex:1">
+          <span class="btn-icon">✅</span><span>Submit Answer</span>
+        </button>
+        <button class="icon-btn" onclick="skipMockQuestion()" style="padding:14px 20px">⏭ Skip</button>
+      </div>
+      <div id="mockAnswerFeedback" style="margin-top:16px"></div>
+    </div>
+    <div id="mock-report" style="display:none">
+      <div class="card" style="padding:24px">
+        <h2 style="font-family:Syne,sans-serif;margin-bottom:20px">🏆 Interview Report Card</h2>
+        <div class="score-grid" id="mockReportScores"></div>
+        <div id="mockReportDetail"></div>
+        <button class="primary-btn" style="margin-top:20px" onclick="resetMockInterview()">
+          <span class="btn-icon">🔄</span><span>Start New Interview</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ QUESTION BANK PANEL ══ -->
+  <section class="panel" id="panel-bank">
+    <div class="panel-header">
+      <h1 class="panel-title">Question Bank — <span class="gradient-text">200+ Questions</span></h1>
+      <p class="panel-sub">Browse role-specific questions. Click any question to practice it directly in Text or Evaluate mode.</p>
+    </div>
+    <div class="bank-filters">
+      <input type="text" id="bankSearch" class="text-input" placeholder="🔍 Search questions…" oninput="filterBank()" style="margin-bottom:0"/>
+      <select id="bankDifficulty" class="mini-select" onchange="filterBank()">
+        <option value="">All Levels</option>
+        <option value="easy">🟢 Easy</option>
+        <option value="medium">🟡 Medium</option>
+        <option value="hard">🔴 Hard</option>
+      </select>
+    </div>
+    <div class="bank-category-tabs" id="bankCategoryTabs"></div>
+    <div class="bank-grid" id="bankGrid"></div>
+  </section>
+
+  <!-- ══ FLASHCARDS PANEL ══ -->
+  <section class="panel" id="panel-flash">
+    <div class="panel-header">
+      <h1 class="panel-title">Flashcards — <span class="gradient-text">Master Key Concepts</span></h1>
+      <p class="panel-sub">Flip cards to test your knowledge. Click to reveal the answer. Track what you know.</p>
+    </div>
+    <div class="flash-controls">
+      <select id="flashCategory" class="mini-select" onchange="loadFlashcards()">
+        <option value="english">🌐 English Phrases</option>
+        <option value="java">☕ Java Concepts</option>
+        <option value="python">🐍 Python Concepts</option>
+        <option value="system">🏗️ System Design</option>
+        <option value="behavioral">🤝 Behavioral STAR</option>
+        <option value="devops">⚙️ DevOps</option>
+      </select>
+      <div class="flash-stats">
+        <span id="flashKnow" class="flash-stat know">✅ Know: 0</span>
+        <span id="flashDontKnow" class="flash-stat dont">❌ Learning: 0</span>
+        <span id="flashProgress" class="flash-stat total">📚 0/0</span>
+      </div>
+    </div>
+    <div class="flashcard-wrap" id="flashcardWrap">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="flashcard-inner" id="flashcardInner">
+          <div class="flashcard-front" id="flashFront"></div>
+          <div class="flashcard-back" id="flashBack"></div>
+        </div>
+      </div>
+    </div>
+    <div class="flash-nav">
+      <button class="icon-btn" onclick="prevCard()">← Prev</button>
+      <div class="flash-action-btns" id="flashActionBtns" style="display:none">
+        <button class="flash-btn dont" onclick="markCard(false)">❌ Still Learning</button>
+        <button class="flash-btn know" onclick="markCard(true)">✅ I Know This</button>
+      </div>
+      <button class="icon-btn" onclick="nextCard()">Next →</button>
+    </div>
+  </section>
+
+</main>
+
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+<script src="features.js"></script>
+</body>
+</html>
