@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --bg:#050a12;--bg2:#0b1422;--bg3:#101d30;--border:#1a2d45;
   --accent:#00d4ff;--accent2:#7b5cfa;--accent3:#00ff9d;--warn:#ff6b35;
   --text:#e8f4ff;--muted:#5a7a9a;--card:rgba(11,20,34,0.95);
@@ -48,7 +48,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 /* TOPBAR */
 .top-bar{height:var(--topbar-h);background:rgba(11,20,34,0.8);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;padding:0 24px;position:sticky;top:0;z-index:50;}
 .hamburger{display:none;background:none;border:none;color:var(--text);font-size:20px;cursor:pointer;padding:4px;}
-.top-bar-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;flex:1;}
+.top-bar-title{margin-left:8px; font-family:'Syne',sans-serif;font-size:15px;font-weight:700;flex:1;}
 .top-bar-actions{display:flex;align-items:center;gap:12px;}
 .session-stat{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:4px 10px;border-radius:20px;border:1px solid var(--border);}
 .top-select{width:auto;}
@@ -301,3 +301,44 @@ video{width:100%;display:block;object-fit:cover;}
 .flash-btn.know{background:rgba(0,255,157,0.15);color:var(--accent3);border:1px solid rgba(0,255,157,0.3);}
 .flash-btn.dont{background:rgba(255,107,53,0.12);color:var(--warn);border:1px solid rgba(255,107,53,0.3);}
 .flash-btn:hover{transform:translateY(-1px);}
+
+/* ── NAV DIVIDER ── */
+.nav-divider{padding:8px 16px;margin:4px 0;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);opacity:.5;text-transform:uppercase;border-top:1px solid var(--border);}
+
+/* ── TRACKER ── */
+.tracker-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
+.tracker-stats{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.tracker-stat{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;text-align:center;min-width:80px;}
+.tracker-stat-num{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;}
+.tracker-stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;}
+.tracker-table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
+.tracker-table{width:100%;border-collapse:collapse;font-size:13px;}
+.tracker-table thead{background:var(--bg3);}
+.tracker-table th{padding:10px 14px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border);}
+.tracker-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.tracker-table tr:hover{background:rgba(0,212,255,0.03);}
+.status-badge{padding:3px 10px;border-radius:12px;font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;display:inline-block;}
+.status-badge.evaluated{background:rgba(0,212,255,0.1);color:var(--accent);}
+.status-badge.applied{background:rgba(123,92,250,0.1);color:var(--accent2);}
+.status-badge.interview{background:rgba(0,255,157,0.1);color:var(--accent3);}
+.status-badge.offer{background:rgba(0,255,157,0.2);color:var(--accent3);}
+.status-badge.rejected{background:rgba(255,107,53,0.1);color:var(--warn);}
+.status-badge.discarded{background:var(--bg3);color:var(--muted);}
+.tracker-score{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
+
+/* ── STORY BANK ── */
+.story-list{display:flex;flex-direction:column;gap:12px;}
+.story-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px;transition:.2s;}
+.story-card:hover{border-color:var(--accent);}
+.story-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.story-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--text);}
+.story-theme-badge{padding:3px 10px;border-radius:12px;font-size:10px;font-family:'JetBrains Mono',monospace;background:rgba(123,92,250,0.1);color:var(--accent2);}
+.story-star-grid{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:12px;line-height:1.6;}
+.star-label{font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:11px;}
+
+/* ── OUTREACH / SALARY RESULT ── */
+.outreach-msg{background:var(--bg2);border:1px solid rgba(0,212,255,0.2);border-radius:12px;padding:18px;font-size:14px;line-height:1.7;position:relative;}
+.outreach-msg .char-count{position:absolute;bottom:8px;right:12px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--muted);}
+.salary-range-bar{height:8px;background:var(--bg3);border-radius:4px;margin:12px 0;position:relative;overflow:visible;}
+.salary-range-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent2),var(--accent3));}
+.salary-marker{position:absolute;top:-6px;width:20px;height:20px;border-radius:50%;border:2px solid var(--text);display:flex;align-items:center;justify-content:center;font-size:8px;}

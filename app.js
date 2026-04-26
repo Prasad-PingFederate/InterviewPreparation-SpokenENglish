@@ -1,4 +1,4 @@
-﻿// ── STATE ──────────────────────────────────────────
+﻿// -- STATE ------------------------------------------
 let apiKeyValue = '';
 let sessionHistory = JSON.parse(localStorage.getItem('sp_history') || '[]');
 let sessionCounts = JSON.parse(localStorage.getItem('sp_counts') || '{"text":0,"voice":0,"video":0,"eval":0}');
@@ -30,7 +30,7 @@ const QUICK_Q = {
   'Product Manager':['What is product-market fit?','How do you prioritize features?','Explain your product roadmap','Handling stakeholder conflicts','Metrics for product success'],
 };
 
-// ── INIT ───────────────────────────────────────────
+// -- INIT -------------------------------------------
 window.onload = () => {
   loadKey();
   updateQuickQuestions();
@@ -38,7 +38,7 @@ window.onload = () => {
   renderDashboard();
 };
 
-// ── API KEY ────────────────────────────────────────
+// -- API KEY ----------------------------------------
 function loadKey() {
   const k = sessionStorage.getItem('sp_key');
   if (k) { document.getElementById('apiKey').value = k; apiKeyValue = k; checkKey(); }
@@ -49,17 +49,17 @@ function checkKey() {
   apiKeyValue = k;
   const st = document.getElementById('apiStatus');
   if (k.startsWith('sk-ant-') && k.length > 30) {
-    st.textContent = '● Connected'; st.className = 'api-status ok';
+    st.textContent = '? Connected'; st.className = 'api-status ok';
     sessionStorage.setItem('sp_key', k);
   } else {
-    st.textContent = '● Not connected'; st.className = 'api-status err';
+    st.textContent = '? Not connected'; st.className = 'api-status err';
   }
 }
 
-// ── CLAUDE API ─────────────────────────────────────
+// -- CLAUDE API -------------------------------------
 async function callClaude(prompt, systemMsg, maxTokens = 1500) {
   if (!apiKeyValue.startsWith('sk-ant-')) {
-    showToast('⚠️ Please enter your Anthropic API key!'); return null;
+    showToast('?? Please enter your Anthropic API key!'); return null;
   }
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -71,16 +71,43 @@ async function callClaude(prompt, systemMsg, maxTokens = 1500) {
   return d.content[0].text;
 }
 
-// ── NAVIGATION ─────────────────────────────────────
+// -- NAVIGATION -------------------------------------
 function switchTab(tab) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('panel-' + tab).classList.add('active');
-  document.getElementById('nav-' + tab).classList.add('active');
-  const titles = { text:'📝 Text Practice', voice:'🎙 Voice Mode', video:'📹 Video Mode', evaluate:'🧠 Evaluate Me', resume:'📄 Resume Builder', dashboard:'📊 Dashboard' };
-  document.getElementById('topBarTitle').textContent = titles[tab] || tab;
+  const panel = document.getElementById('panel-' + tab);
+  const nav = document.getElementById('nav-' + tab);
+  if (panel) panel.classList.add('active');
+  if (nav) nav.classList.add('active');
+  
+  const titles = { 
+    text: '📝 Text Practice', 
+    voice: '🎙 Voice Mode', 
+    video: '📹 Video Mode', 
+    evaluate: '🧠 Evaluate Me', 
+    resume: '📄 Resume Builder', 
+    dashboard: '📊 Dashboard',
+    mock: '🎯 Mock Interview',
+    bank: '📚 Question Bank',
+    flash: '🃏 Flashcards',
+    jobeval: '🔍 Job Evaluator',
+    tracker: '📋 Job Tracker',
+    stories: '⭐ STAR Stories',
+    outreach: '💼 LinkedIn Outreach',
+    salary: '💰 Salary Negotiator'
+  };
+  
+  const titleEl = document.getElementById('topBarTitle');
+  if (titleEl) titleEl.textContent = titles[tab] || tab;
+  
   if (tab === 'dashboard') renderDashboard();
-  if (window.innerWidth <= 700) document.getElementById('sidebar').classList.remove('open');
+  if (tab === 'tracker' && typeof updateTrackerUI === 'function') updateTrackerUI();
+  if (tab === 'stories' && typeof updateStoryList === 'function') updateStoryList();
+  
+  if (window.innerWidth <= 700) {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.remove('open');
+  }
 }
 
 function toggleSidebar() {
@@ -90,14 +117,19 @@ function toggleSidebar() {
 function updateQuickQuestions() {
   const role = document.getElementById('jobRole').value;
   const qs = QUICK_Q[role] || [];
-  document.getElementById('quickQuestions').innerHTML = qs.map(q =>
-    `<button class="quick-btn" onclick="setQuestion('${q.replace(/'/g,"\\'")}')">💬 ${q}</button>`
-  ).join('');
+  const container = document.getElementById('quickQuestions');
+  if (container) {
+    container.innerHTML = qs.map(q =>
+      \<button class="quick-btn" onclick="setQuestion('\')">📝 \</button>\
+    ).join('');
+  }
 }
 
-function setQuestion(q) { document.getElementById('textQuestion').value = q; }
+function setQuestion(q) { 
+  const input = document.getElementById('textQuestion');
+  if (input) input.value = q; 
+}
 
-// ── FORMAT RESPONSE ────────────────────────────────
 function fmt(text) {
   return text
     .replace(/```(\w+)?\n?([\s\S]*?)```/g, '<pre>$2</pre>')
@@ -105,9 +137,9 @@ function fmt(text) {
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/^##\s*(.*)/gm, '<div class="res-h2">$1</div>')
     .replace(/^###\s*(.*)/gm, '<div class="res-h3">$1</div>')
-    .replace(/🎯(.*)/g, '<div class="key-takeaway">🎯$1</div>')
-    .replace(/✅(.*)/g, '<div class="tip-line">✅$1</div>')
-    .replace(/❌(.*)/g, '<div class="err-line">❌$1</div>')
+    .replace(/??(.*)/g, '<div class="key-takeaway">??$1</div>')
+    .replace(/?(.*)/g, '<div class="tip-line">?$1</div>')
+    .replace(/?(.*)/g, '<div class="err-line">?$1</div>')
     .replace(/\n/g, '<br>');
 }
 
@@ -122,7 +154,7 @@ fmtStyle.textContent = `
 `;
 document.head.appendChild(fmtStyle);
 
-// ── TEXT MODE ──────────────────────────────────────
+// -- TEXT MODE --------------------------------------
 async function askTextQuestion() {
   const q = document.getElementById('textQuestion').value.trim();
   if (!q) { showToast('Please enter a question!'); return; }
@@ -139,30 +171,30 @@ async function askTextQuestion() {
   const sys = `You are an elite interview coach and ${role} expert with 15+ years experience.
 Help a ${exp} candidate. Answer style: ${style}.
 Format: use **bold** for key terms, ## for sections, bullet points.
-End with a "🎯 Key Takeaway:" section (1-2 lines).`;
+End with a "?? Key Takeaway:" section (1-2 lines).`;
 
   try {
     const ans = await callClaude(q, sys);
     box.innerHTML = `
       <div class="res-header">
-        <h3 class="res-title">🤖 AI Expert Answer</h3>
+        <h3 class="res-title">?? AI Expert Answer</h3>
         <div class="res-actions">
-          <button class="icon-btn" onclick="copyEl('textBodyContent')">📋 Copy</button>
-          <button class="icon-btn" onclick="speakText('textBodyContent')">🔊 Read</button>
+          <button class="icon-btn" onclick="copyEl('textBodyContent')">?? Copy</button>
+          <button class="icon-btn" onclick="speakText('textBodyContent')">?? Read</button>
         </div>
       </div>
       <div class="res-body" id="textBodyContent">${fmt(ans)}</div>`;
     addHistory(q, role, 'text');
     incrementCount('text');
   } catch (e) {
-    box.innerHTML = `<div style="color:var(--warn);padding:10px">❌ ${e.message}</div>`;
+    box.innerHTML = `<div style="color:var(--warn);padding:10px">? ${e.message}</div>`;
   }
   btn.disabled = false; btn.querySelector('span:last-child').textContent = 'Get Expert Answer';
 }
 
 function copyResponse() { copyEl('textBodyContent'); }
 
-// ── VOICE MODE ─────────────────────────────────────
+// -- VOICE MODE -------------------------------------
 function setVoiceMode(mode) {
   voiceMode = mode;
   document.getElementById('vtog-ask').classList.toggle('active', mode === 'ask');
@@ -185,8 +217,8 @@ function startVoiceRec() {
   recognition.onstart = () => {
     isRecording = true;
     document.getElementById('micRing').classList.add('active');
-    document.getElementById('micBtn').textContent = '⏹';
-    document.getElementById('voiceStatus').textContent = '🔴 Listening… Speak now';
+    document.getElementById('micBtn').textContent = '?';
+    document.getElementById('voiceStatus').textContent = '?? Listening… Speak now';
     document.getElementById('waveform').classList.add('active');
     document.getElementById('voiceTranscript').textContent = '';
   };
@@ -206,15 +238,15 @@ function stopVoiceRec() {
   isRecording = false;
   if (recognition) recognition.stop();
   document.getElementById('micRing').classList.remove('active');
-  document.getElementById('micBtn').textContent = '🎤';
+  document.getElementById('micBtn').textContent = '??';
   document.getElementById('waveform').classList.remove('active');
-  document.getElementById('voiceStatus').textContent = '⏳ Processing…';
+  document.getElementById('voiceStatus').textContent = '? Processing…';
 }
 
 async function processVoiceInput(text) {
   const role = document.getElementById('jobRole').value;
   const exp = document.getElementById('expLevel').value;
-  document.getElementById('voiceStatus').textContent = '✨ Analysing & generating feedback…';
+  document.getElementById('voiceStatus').textContent = '? Analysing & generating feedback…';
   const area = document.getElementById('voiceFeedbackArea');
   area.innerHTML = thinking('Analysing your speech…');
 
@@ -223,7 +255,7 @@ async function processVoiceInput(text) {
 Given a spoken question (may have grammar errors), do TWO things:
 1. Output corrected English version labelled "CORRECTED:"
 2. Provide a thorough interview answer labelled "ANSWER:" formatted with ** for bold, ## for sections.
-End the ANSWER with 🎯 Key Takeaway.`;
+End the ANSWER with ?? Key Takeaway.`;
     try {
       const res = await callClaude(`Spoken input: "${text}"`, sys);
       const corrMatch = res.match(/CORRECTED:([\s\S]*?)ANSWER:/i);
@@ -233,22 +265,22 @@ End the ANSWER with 🎯 Key Takeaway.`;
       voiceAnswer = answer;
       area.innerHTML = `
         <div class="correction-block">
-          <div class="block-label">✅ Corrected English</div>
+          <div class="block-label">? Corrected English</div>
           <div style="font-size:14px;line-height:1.7;">${corrected}</div>
         </div>
         <div class="response-card">
           <div class="res-header">
-            <h3 class="res-title">🤖 AI Answer</h3>
+            <h3 class="res-title">?? AI Answer</h3>
             <div class="res-actions">
-              <button class="icon-btn" onclick="copyEl('vAnswerBody')">📋 Copy</button>
-              <button class="speak-answer-btn" onclick="speakText('vAnswerBody')">🔊 Play Answer</button>
+              <button class="icon-btn" onclick="copyEl('vAnswerBody')">?? Copy</button>
+              <button class="speak-answer-btn" onclick="speakText('vAnswerBody')">?? Play Answer</button>
             </div>
           </div>
           <div class="res-body" id="vAnswerBody">${fmt(answer)}</div>
         </div>`;
-      document.getElementById('voiceStatus').textContent = '✅ Done!';
+      document.getElementById('voiceStatus').textContent = '? Done!';
       addHistory(corrected, role, 'voice'); incrementCount('voice');
-    } catch (e) { area.innerHTML = `<div style="color:var(--warn)">❌ ${e.message}</div>`; document.getElementById('voiceStatus').textContent = 'Error occurred'; }
+    } catch (e) { area.innerHTML = `<div style="color:var(--warn)">? ${e.message}</div>`; document.getElementById('voiceStatus').textContent = 'Error occurred'; }
   } else {
     // EVALUATE mode
     const question = document.getElementById('voicePracticeQ').value.trim() || 'General interview question';
@@ -277,19 +309,19 @@ Analyse and return JSON only:
     renderVoiceEval(data, container);
     incrementCount('voice');
   } catch(e) {
-    container.innerHTML = `<div style="color:var(--warn)">❌ ${e.message}</div>`;
+    container.innerHTML = `<div style="color:var(--warn)">? ${e.message}</div>`;
   }
 }
 
 function renderVoiceEval(d, container) {
   const color = v => v >= 75 ? 'var(--accent3)' : v >= 50 ? 'var(--accent)' : 'var(--warn)';
   const mistakes = (d.grammarMistakes || []).map(m =>
-    `<div class="mistake-item"><span>❌ <span class="mistake-wrong">${m.wrong}</span> → ✅ <span class="mistake-right">${m.right}</span> — <em style="color:var(--muted)">${m.explanation}</em></span></div>`
-  ).join('') || '<div style="color:var(--accent3);font-size:13px">✅ No major grammar mistakes found!</div>';
+    `<div class="mistake-item"><span>? <span class="mistake-wrong">${m.wrong}</span> ? ? <span class="mistake-right">${m.right}</span> — <em style="color:var(--muted)">${m.explanation}</em></span></div>`
+  ).join('') || '<div style="color:var(--accent3);font-size:13px">? No major grammar mistakes found!</div>';
 
   container.innerHTML = `
     <div class="response-card">
-      <div class="res-header"><h3 class="res-title">📊 Your Performance</h3></div>
+      <div class="res-header"><h3 class="res-title">?? Your Performance</h3></div>
       <div class="score-grid">
         ${['overallScore','grammarScore','contentScore','fluencyScore'].map(k => `
           <div class="score-card">
@@ -299,16 +331,16 @@ function renderVoiceEval(d, container) {
           </div>`).join('')}
       </div>
       <div style="margin-bottom:14px;">
-        <div class="eval-section-title" style="color:var(--warn);margin-bottom:8px;">⚡ Grammar Corrections</div>
+        <div class="eval-section-title" style="color:var(--warn);margin-bottom:8px;">? Grammar Corrections</div>
         ${mistakes}
       </div>
       <div class="correction-block">
-        <div class="block-label">✅ How You Should Have Said It</div>
+        <div class="block-label">? How You Should Have Said It</div>
         <div style="font-size:13px;line-height:1.7;font-style:italic;">${d.correctedAnswer || ''}</div>
       </div>
-      ${d.fillerWords && d.fillerWords.length ? `<div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);border-radius:10px;padding:12px;margin-top:12px;font-size:13px;"><strong style="color:var(--warn)">⚠️ Filler Words:</strong> ${d.fillerWords.join(', ')}</div>` : ''}
+      ${d.fillerWords && d.fillerWords.length ? `<div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);border-radius:10px;padding:12px;margin-top:12px;font-size:13px;"><strong style="color:var(--warn)">?? Filler Words:</strong> ${d.fillerWords.join(', ')}</div>` : ''}
       <div class="encourage-block" style="margin-top:14px;">
-        <div class="block-label">💪 Coach's Encouragement</div>
+        <div class="block-label">?? Coach's Encouragement</div>
         <div style="font-size:14px;line-height:1.7;">${d.encouragement || ''}</div>
       </div>
     </div>`;
@@ -340,7 +372,7 @@ function startVideoRecord() {
   document.getElementById('playbackBtn').disabled = true;
   document.getElementById('analyseBtn').disabled = true;
   document.getElementById('feedbackBox').style.display = 'none';
-  document.getElementById('liveTranscriptMini').textContent = 'Live transcript appears here as you speak�';
+  document.getElementById('liveTranscriptMini').textContent = 'Live transcript appears here as you speak?';
   if (SR) {
     liveRecognition = new SR();
     liveRecognition.continuous = true; liveRecognition.interimResults = true; liveRecognition.lang = 'en-US';
@@ -381,11 +413,11 @@ async function analyseVideo() {
   const role = document.getElementById('jobRole').value;
   const exp = document.getElementById('expLevel').value;
   const btn = document.getElementById('analyseBtn');
-  btn.disabled = true; btn.textContent = '? Analysing�';
+  btn.disabled = true; btn.textContent = '? Analysing?';
   const fb = document.getElementById('feedbackBox');
   fb.style.display = 'block';
   document.getElementById('scoreRow').innerHTML = '';
-  document.getElementById('feedbackContent').innerHTML = thinking('Running deep AI analysis�');
+  document.getElementById('feedbackContent').innerHTML = thinking('Running deep AI analysis?');
 
   const sys = `You are an elite interview coach analysing a video interview response for ${role} (${exp}).
 Analyse the transcript and return valid JSON only:
@@ -404,7 +436,7 @@ Analyse the transcript and return valid JSON only:
   } catch(e) {
     document.getElementById('feedbackContent').innerHTML = `<span style="color:var(--warn)">? ${e.message}</span>`;
   }
-  btn.disabled = false; btn.textContent = '🔍 Analyse';
+  btn.disabled = false; btn.textContent = '?? Analyse';
 }
 
 function renderVideoFeedback(data) {
@@ -418,11 +450,11 @@ function renderVideoFeedback(data) {
     </div>`).join('');
   let extra = '';
   if (data.fillerWords && data.fillerWords.length)
-    extra += `<div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);border-radius:10px;padding:12px;margin-top:12px;font-size:13px;"><strong style="color:var(--warn)">⚠️ Filler Words Detected:</strong> ${data.fillerWords.join(', ')}</div>`;
+    extra += `<div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);border-radius:10px;padding:12px;margin-top:12px;font-size:13px;"><strong style="color:var(--warn)">?? Filler Words Detected:</strong> ${data.fillerWords.join(', ')}</div>`;
   if (data.topTip)
-    extra += `<div style="background:rgba(0,255,157,0.08);border:1px solid rgba(0,255,157,0.2);border-radius:10px;padding:12px;margin-top:10px;font-size:13px;"><strong style="color:var(--accent3)">🚀 Top Tip:</strong> ${data.topTip}</div>`;
+    extra += `<div style="background:rgba(0,255,157,0.08);border:1px solid rgba(0,255,157,0.2);border-radius:10px;padding:12px;margin-top:10px;font-size:13px;"><strong style="color:var(--accent3)">?? Top Tip:</strong> ${data.topTip}</div>`;
   if (data.encouragement)
-    extra += `<div class="encourage-block" style="margin-top:12px;"><div class="block-label">💪 Encouragement</div><div style="font-size:13px;line-height:1.7">${data.encouragement}</div></div>`;
+    extra += `<div class="encourage-block" style="margin-top:12px;"><div class="block-label">?? Encouragement</div><div style="font-size:13px;line-height:1.7">${data.encouragement}</div></div>`;
   document.getElementById('feedbackContent').innerHTML = fmt(data.feedback || '') + extra;
 }
 
@@ -443,10 +475,10 @@ async function evaluateAnswer() {
   const role = document.getElementById('jobRole').value;
   const exp = document.getElementById('expLevel').value;
   const btn = document.getElementById('evalBtn');
-  btn.disabled = true; btn.querySelector('span:last-child').textContent = 'Evaluating�';
+  btn.disabled = true; btn.querySelector('span:last-child').textContent = 'Evaluating?';
   const result = document.getElementById('evalResult');
   result.style.display = 'block';
-  result.innerHTML = thinking('Analysing your answer with brutal honesty�');
+  result.innerHTML = thinking('Analysing your answer with brutal honesty?');
 
   const sys = `You are a brutally honest, no-nonsense interview coach for ${role} (${exp} level).
 Focus area: ${evalFocus}.
@@ -480,7 +512,7 @@ function renderEvalResult(d, container) {
   const mistakes = (d.grammarMistakes || []).slice(0, 8).map(m =>
     `<div class="mistake-item">? <span class="mistake-wrong">"${m.wrong}"</span> ? ? <span class="mistake-right">"${m.right}"</span><br><em style="color:var(--muted);font-size:12px">${m.explanation}</em></div>`
   ).join('') || '<div style="color:var(--accent3);font-size:13px;padding:8px 0">? Grammar is solid!</div>';
-  const issues = (d.contentIssues || []).map(i => `<div style="margin:4px 0;font-size:13px"> ${i}</div>`).join('') || '<div style="color:var(--accent3);font-size:13px">✅ Content is well-structured!</div>';
+  const issues = (d.contentIssues || []).map(i => `<div style="margin:4px 0;font-size:13px"> ${i}</div>`).join('') || '<div style="color:var(--accent3);font-size:13px">? Content is well-structured!</div>';
   const strengths = (d.strengths || []).map(s => `<div style="margin:4px 0;font-size:13px;color:var(--accent3)">? ${s}</div>`).join('');
 
   container.innerHTML = `
@@ -500,7 +532,7 @@ function renderEvalResult(d, container) {
         ${mistakes}
       </div>
       <div style="margin-bottom:16px;">
-        <div class="eval-section-title" style="color:var(--warn)">🔴 Content Issues</div>
+        <div class="eval-section-title" style="color:var(--warn)">?? Content Issues</div>
         ${issues}
       </div>
       <div style="margin-bottom:16px;">
@@ -508,11 +540,11 @@ function renderEvalResult(d, container) {
         ${strengths}
       </div>
       <div class="correction-block">
-        <div class="block-label">🏆 How a Perfect Answer Looks</div>
+        <div class="block-label">?? How a Perfect Answer Looks</div>
         <div style="font-size:13px;line-height:1.8;font-style:italic;color:var(--text)">${(d.improvedAnswer||'').replace(/\n/g,'<br>')}</div>
       </div>
       <div class="encourage-block" style="margin-top:14px;">
-        <div class="block-label">💪 Your Coach Says</div>
+        <div class="block-label">?? Your Coach Says</div>
         <div style="font-size:14px;line-height:1.7">${d.encouragement||''}</div>
       </div>
     </div>`;
@@ -524,9 +556,9 @@ async function generateResume() {
   const role = document.getElementById('rRole').value.trim();
   if (!name || !role) { showToast('Please fill in your name and target role!'); return; }
   const btn = document.getElementById('resumeGenBtn');
-  btn.disabled = true; btn.querySelector('span:last-child').textContent = 'Generating�';
+  btn.disabled = true; btn.querySelector('span:last-child').textContent = 'Generating?';
   const preview = document.getElementById('resumePreview');
-  preview.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:300px;color:#555">${thinking('Crafting your professional resume�')}</div>`;
+  preview.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:300px;color:#555">${thinking('Crafting your professional resume...')}</div>`;
 
   const data = {
     name, role, email: document.getElementById('rEmail').value,
@@ -559,7 +591,7 @@ Achievements/Projects: ${data.achievements}`;
     const html = await callClaude(prompt, sys, 2000);
     preview.innerHTML = html;
     document.getElementById('downloadResumeBtn').style.display = 'inline-flex';
-    showToast('? Resume generated!');
+    showToast('✅ Resume generated!');
   } catch(e) {
     preview.innerHTML = `<div style="color:red;padding:20px">? ${e.message}</div>`;
   }
@@ -593,18 +625,18 @@ function renderDashboard() {
   document.getElementById('stat-voice').textContent = sessionCounts.voice || 0;
   document.getElementById('stat-eval').textContent = sessionCounts.eval || 0;
   document.getElementById('sessionStat').textContent = `${total} sessions`;
-  const icons = { text:'📝', voice:'🎙', video:'📹', eval:'🧠' };
+  const icons = { text:'??', voice:'??', video:'??', eval:'??' };
   const list = document.getElementById('historyList');
   document.getElementById('historyCount').textContent = sessionHistory.length;
   if (!sessionHistory.length) {
-    list.innerHTML = '<div class="empty-state">No sessions yet. Start practising! 🚀</div>'; return;
+    list.innerHTML = '<div class="empty-state">No sessions yet. Start practising! ??</div>'; return;
   }
   list.innerHTML = sessionHistory.slice(0,20).map(h => `
     <div class="history-item">
-      <div class="hi-icon">${icons[h.type]||'💬'}</div>
+      <div class="hi-icon">${icons[h.type]||'??'}</div>
       <div style="flex:1">
-        <div class="hi-q">${h.q.substring(0,80)}${h.q.length>80?'�':''}</div>
-        <div class="hi-meta">${h.role} � ${h.type} � ${h.time}</div>
+        <div class="hi-q">${h.q.substring(0,80)}${h.q.length>80?'?':''}</div>
+        <div class="hi-meta">${h.role} ? ${h.type} ? ${h.time}</div>
       </div>
     </div>`).join('');
 }
@@ -651,3 +683,6 @@ function showToast(msg) {
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
+
+
+

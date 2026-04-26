@@ -449,11 +449,7 @@ function updateFlashStats() {
   document.getElementById('flashProgress').textContent = ` ${flashIdx+1}/${flashDeck.length}`;
 }
 
-// -- PATCH switchTab FOR NEW PANELS -----------------
-const _origSwitch = switchTab;
-window.switchTab = function(tab) {
-  _origSwitch(tab);
-  const extraTitles = { mock:'🎯 Mock Interview', bank:'📚 Question Bank', flash:'🃏 Flashcards' };
+
   if (extraTitles[tab]) document.getElementById('topBarTitle').textContent = extraTitles[tab];
   if (tab === 'bank') { initBank(); filterBank(); }
   if (tab === 'flash') loadFlashcards();
@@ -481,3 +477,5 @@ document.addEventListener('DOMContentLoaded', () => {
     actions.insertBefore(dcBtn, actions.firstChild);
   }
 });
+
+
